@@ -1,0 +1,91 @@
+class AudioManager:MonoBehaviour
+{
+    
+    public static AudioManager Instance {
+
+        get {
+            if (instance!=null)
+            {
+                return instance;
+            }
+            else
+            {
+                GameObject gameObject = new GameObject("AudioManager");
+                gameObject.AddComponent<AudioManager>();
+                instance = gameObject.GetComponent<AudioManager>();
+                return instance;
+            }
+        }
+    }
+
+    private static AudioManager instance;
+    private float volume;
+	
+    public void SetSoundEffect(float v) {
+        volume = v;
+        if (audioSourcesPool==null)
+        {
+            audioSourcesPool = new List<AudioSource>();
+        }
+        foreach (var item in audioSourcesPool)
+        {
+            item.volume = v;
+        }
+    }
+    public AudioClip[] audioClips;
+    List<AudioSource> audioSourcesPool;
+
+    private void Awake()
+    {
+        instance = this;
+        audioClips = Resources.LoadAll<AudioClip>("Sound/");
+    }
+
+    
+    public void Play(int index) {
+        GetAudioSource().PlayOneShot(audioClips[index]);
+    }
+
+    private AudioSource GetAudioSource()
+    {
+        if (audioSourcesPool==null)
+        {
+            audioSourcesPool = new List<AudioSource>();
+        }
+
+        if (FindAudio() == null) {
+            return AddAudioObj();
+        }
+        else
+            return FindAudio();
+    }
+
+
+    AudioSource FindAudio() {
+        AudioSource audioSource = null;
+        foreach (var item in audioSourcesPool)
+        {
+            if (item.isPlaying)
+            {
+                continue;
+            }
+            else
+            {
+                audioSource= item;
+                break;
+            }
+        }
+
+        return audioSource;
+    }
+
+    private AudioSource AddAudioObj()
+    {
+        GameObject audioSourceObj = new GameObject("audioSource", typeof(AudioSource));
+        audioSourceObj.transform.SetParent(transform);
+        AudioSource audioSource = audioSourceObj.GetComponent<AudioSource>();
+        audioSource.volume = PlayerPrefs.GetInt("Sound", 1);
+        audioSourcesPool.Add(audioSource);
+        return audioSource;
+    }
+}
