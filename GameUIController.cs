@@ -15,6 +15,7 @@ using UnityEngine.UI;
  游戏UI控制类
      管理游戏UI界面按钮的类
 	 这段代码用来控制Text的数字动态的变化
+	 使用dotween，更简单方便。
      */
 public class GameUIController : MonoBehaviour {
     #region Inspector
@@ -153,5 +154,18 @@ public class GameUIController : MonoBehaviour {
         }
         
     }
+//持续动态增数字，用dotween更快更方便
+    public void AccelerateNumber(int num, Text text)
+    {
+        if (text.text.Contains("/")|| text.text==null)
+        {
+            text.text = "0";
+        }
 
+        int textV = int.Parse(text.text);
+        DOTween.To(()=>textV,x=>textV=x, Mathf.Clamp(num,0,999999),0.5f).OnUpdate(delegate {
+
+            text.text = textV.ToString();
+        });
+    }
 }
