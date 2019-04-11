@@ -1,0 +1,38 @@
+public class GameTime {
+
+   //判断是否距离上次的时间戳过去了几分钟
+   //输出一个timeSpan倒计时
+    public static bool IsPassedMinutes(DateTime timeNow,string lastTimeStamp, int n, out TimeSpan timeSpanCountDown)
+    {
+        if (lastTimeStamp.Length == 0)
+        {
+            timeSpanCountDown = TimeSpan.MinValue;
+            return false;
+        }
+        else
+        {
+            DateTime currentTime = timeNow;
+            DateTime recentTime = Convert.ToDateTime(lastTimeStamp);
+            recentTime = recentTime.AddMinutes(n);
+            timeSpanCountDown = recentTime.Subtract(currentTime);
+            if (currentTime < recentTime)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+    }
+
+    
+}
+
+
+//.net 3.5不支持timespan.toString("hh":"mm":"ss")带参数的,可以用下面的方法
+string.Format("{0:00}:{1:00}:{2:00}",
+                    (int)countDownTime.TotalHours,
+                    countDownTime.Minutes,
+                    countDownTime.Seconds);
